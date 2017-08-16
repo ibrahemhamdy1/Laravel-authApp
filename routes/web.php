@@ -2,26 +2,48 @@
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Application Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| Here is where you can register all of the routes for an application.
+| It's a breeze. Simply tell Laravel the URIs it should respond to
+| and give it the Closure to execute when that URI is requested.
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', function()
+{
+	return View::make('hello');
 });
 
-Route::get('/register','RegisterController@showRegister');
-Route::post('/register','RegisterController@doRegister');
+Route::get('/register', 'RegisterController@showRegister');
+Route::post('/register', 'RegisterController@doRegister');
 
-Route::get('/login',function(){
-    return  View::make('login');
+Route::get('/login', function()
+{
+    return View::make('login');
 });
 
-Route::get('/logout',function(){
-    return  View::make('logout');
+Route::post('/login', function()
+{
+    $credentials = Input::only('username', 'password');
+    if (Auth::attempt($credentials)) {
+        return Redirect::intended('/');
+    }
+    return Redirect::to('login');
 });
+
+Route::get('/logout', function()
+{
+    Auth::logout();
+    return View::make('logout');
+});
+
+Route::get('/spotlight', array(
+    'before' => 'auth',
+    function()
+{
+    return View::make('spotlight');
+}
+));
+
